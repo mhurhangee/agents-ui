@@ -22,6 +22,8 @@ export async function POST(request: Request) {
     const agent = client.getAgent("completionAgent");
     const response = await agent.generate({ messages });
 
+    console.log("Response:", response);
+
     return NextResponse.json(response);
   } catch (error) {
     console.error('Error:', error);
