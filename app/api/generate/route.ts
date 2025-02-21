@@ -1,6 +1,13 @@
 import { MastraClient } from "@mastra/client-js";
 import { NextResponse } from "next/server";
 
+interface ErrorWithResponse extends Error {
+  response?: {
+    data?: unknown;
+    status?: number;
+  };
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -10,12 +17,10 @@ export async function POST(request: Request) {
     console.log("Messages:", messages);
     console.log("API URL:", process.env.BACKEND_URL || 'http://localhost:4111');
     
-    // Don't log the full token for security
     console.log("AUTH TOKEN (first 10 chars):", process.env.AUTH_TOKEN?.substring(0, 10));
 
     const client = new MastraClient({
       baseUrl: process.env.BACKEND_URL || 'http://localhost:4111',
-
       headers: {
         Authorization: `Bearer ${process.env.AUTH_TOKEN}`,
       },
@@ -32,17 +37,18 @@ export async function POST(request: Request) {
     
     console.log("Response:", response);
     return NextResponse.json(response);
-  } catch (error: any) {
+  } catch (error) {
+    const err = error as ErrorWithResponse;
     console.error('Detailed Error:', {
-      message: error.message,
-      stack: error.stack,
-      response: error.response?.data,
-      status: error.response?.status,
+      message: err.message,
+      stack: err.stack,
+      response: err.response?.data,
+      status: err.response?.status,
     });
     
     return NextResponse.json(
-      { error: 'Failed to generate response', details: error.message },
-      { status: error.response?.status || 500 }
+      { error: 'Failed to generate response', details: err.message },
+      { status: err.response?.status || 500 }
     );
   }
 }
