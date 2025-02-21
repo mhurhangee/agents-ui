@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { MastraClient } from "@mastra/client-js";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,17 +16,21 @@ export default function CompletionGeneratePage() {
     setResponse(null);
 
     try {
-      const client = new MastraClient({
-        baseUrl: process.env.BACKEND_URL || 'http://localhost:4111', // Provide a default value
+      const response = await fetch('/api/generate', {
+        method: 'POST',
         headers: {
-          Authorization: `Bearer ${process.env.AUTH_TOKEN}`, // Include if auth is required
+          'Content-Type': 'application/json',
         },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: input }],
+        }),
       });
 
-      const agent = client.getAgent("your-agent-id"); // Replace with your actual agent ID
-      const res = await agent.generate({
-        messages: [{ role: "user", content: input }],
-      });
+      if (!response.ok) {
+        throw new Error('Failed to generate response');
+      }
+
+      const res = await response.json();
 
       setResponse(res.text || "No response received"); // Access the content safely
     } catch (error) {
