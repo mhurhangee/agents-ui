@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Link from "next/link";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,9 +31,9 @@ export default function RootLayout({
         <div className="relative flex min-h-screen flex-col">
           <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="container flex h-14 items-center">
-              <a href="/" className="mr-6 flex items-center space-x-2">
+              <Link href="/" className="mr-6 flex items-center space-x-2">
                 <span className="font-bold">Mastra.ai agents demo</span>
-              </a>
+              </Link>
             </div>
           </header>
           <main className="flex-1">
